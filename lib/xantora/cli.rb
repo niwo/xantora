@@ -34,7 +34,11 @@ module Xantora
       begin
         doc = Document.new(options[:file])
         destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
-        spinner = TTY::Spinner.new("[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ")
+        spinner = TTY::Spinner.new(
+          "[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ",
+          format: :bouncing_ball
+        )
+        spinner.auto_spin
         doc.convert_to_pdf(options)
         spinner.success "Done!"
       rescue Error => e
@@ -61,7 +65,11 @@ module Xantora
         Dir.glob("#{options[:module_path]}/**/pages/*.adoc") do |file|
           doc = Document.new(file)
           destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
-          spinner = TTY::Spinner.new("[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ")
+          spinner = TTY::Spinner.new(
+            "[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ",
+            format: :bouncing_ball
+          )
+          spinner.auto_spin
           doc.convert_to_pdf(options)
           spinner.success "Done!"
         end
