@@ -12,20 +12,72 @@ module Xantora
       @to_file = options[:to_file]
     end
 
+    def page_component_title
+      module_dir = File.expand_path "../../..", File.dirname(@path)
+      begin
+        YAML.load_file(
+          File.join(module_dir, "antora.yml"),
+        )["title"]
+      rescue
+        ""
+      end
+    end
+
     def pdf_name
       name = File.basename(@path, ".adoc")
       if name == "index"
         doc = Asciidoctor.load_file @path, safe: :safe
-        name = doc.doctitle.downcase.tr(" ", "")
+        name = doc.doctitle.tr(" ", "")
       end
       name + ".pdf"
     end
 
-    def convert_to_pdf(opts = {})
-      opts[:to_file] ||= self.pdf_name 
-      opts[:backend] = "pdf"
-      opts[:safe] = :unsafe
-      Asciidoctor.convert_file @path, opts
+    def pdf_path(options)
+      if !options[:output]
+        pdf_name()
+      elsif options[:output].end_with? ".pdf"
+        options[:output]
+      else
+        File.join options[:output], pdf_name()
+      end
+    end
+
+    def images_dir
+      base_dir = File.expand_path("../..", @path)
+      if Dir.exist? File.join(base_dir, "images")
+        "../images"
+      elsif Dir.exist? File.join(base_dir, "assets/images")
+        "../assets/images"
+      else
+        ""
+      end
+    end
+
+    def asciidoctor_options(options)
+      a_opts = {}
+      a_opts[:to_file] = self.pdf_path(options)
+      a_opts[:backend] = "pdf"
+      a_opts[:safe] = :unsafe
+      a_opts[:attributes] = asciidoc_attributes(options[:attributes])
+      a_opts
+    end
+
+    def asciidoc_attributes(optional_attributes = {})
+      gem_dir = File.expand_path("../..", __dir__)
+      attributes = {
+        "toc" => "auto",
+        "toclevels" => "1",
+        "pdf-theme" => "puzzle",
+        "pdf-themesdir" => File.join(gem_dir, 'asciidoctor-pdf/themes'),
+        "pdf-fontsdir" => File.join(gem_dir, 'asciidoctor-pdf/fonts'),
+        "imagesdir" => images_dir
+      }
+      attributes.merge!({ "page-component-title" => page_component_title() })
+      attributes.merge(optional_attributes)
+    end
+
+    def convert_to_pdf(options = {})
+      Asciidoctor.convert_file @path, asciidoctor_options(options)
     end
   
   end

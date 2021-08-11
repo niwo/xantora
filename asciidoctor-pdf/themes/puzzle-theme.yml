@@ -1,4 +1,5 @@
 extends: default
+toc-title: Inhaltsverzeichnis
 font:
   catalog:
     merge: false
@@ -12,16 +13,16 @@ ulist:
     circle:
       content: "\u2022"
 link:
-  font-color: #46BCC0
+  font-color: #2C97A6
 base:
   font_family: Roboto
   font_style: normal
 page:
   margin: [1.0in, 0.67in, 0.67in, 0.67in]
 heading:
-  font-color: 1E5A96
+  font-color: #1E5A96
 header:
-  font_color: 999999
+  font_color: #999999
   height: 1.0in
   line_height: 1
   recto:
@@ -31,7 +32,7 @@ header:
     center:
       content: image:puzzle-logo.png[pdfwidth=0.8in]
     left:
-      content: 'Puzzle OS'
+      content: '{page-component-title}'
   verso:
     columns: $header_recto_columns
     left:
@@ -44,7 +45,7 @@ footer:
   font-color: $header_font_color
   font_size: $base_font_size_small
   # NOTE if background_color is set, background and border will span width of page
-  border_color: DDDDDD
+  border_color: #DDDDDD
   border_width: 0.25
   height: $base_line_height_length * 2.5
   line_height: 1
@@ -54,7 +55,7 @@ footer:
     right:
       content: 'Seite {page-number}/{page-count}'
     center:
-      content: '(C) {localyear} | Puzzle ITC'
+      content: '(C) {localyear} -- {company}'
     left:
       content: '{doctitle}'
   verso:

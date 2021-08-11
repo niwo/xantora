@@ -17,40 +17,56 @@ module Xantora
     end
     map %w(--version -v) => :version
 
-    desc "convert-file", "convert a single asciidoc file"
+    desc "convert-document", "convert a single asciidoc document"
     option :file,
       desc: "source asciidoc file path",
       aliases: %w(-f),
       required: true
-    option :to_file,
+    option :output,
       desc: "destination file path",
       aliases: %w(-o)
-    def convert_file
+    option :attributes,
+      desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
+      type: :hash,
+      aliases: %w(-a),
+      default: {}
+    def convert_document
       begin
         doc = Document.new(options[:file])
-        spinner = TTY::Spinner.new("[:spinner] Converting #{File.basename(doc.path)} to #{doc.pdf_name} ... ")
-        doc.convert_to_pdf(asciidoctor_options(options))
+        destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
+        spinner = TTY::Spinner.new("[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ")
+        doc.convert_to_pdf(options)
         spinner.success "Done!"
       rescue Error => e
         spinner.error("(ERROR: #{e.message})")
       end
     end
 
-    no_commands do
-      def asciidoctor_options(options)
-        gem_dir = File.expand_path("../..", __dir__)
-        a_opts = {}
-        a_opts[:to_file] = options[:to_file] if options[:to_file]
-        a_opts[:attributes] = [
-          "toc=auto",
-          "toclevels=1",
-          "toc-title=Inhaltsverzeichnis",
-          "imagesdir=../images",
-          "pdf-theme=puzzle",
-          "pdf-themesdir=#{File.join(gem_dir, 'asciidoctor-pdf/themes')}",
-          "pdf-fontsdir=#{File.join(gem_dir, 'asciidoctor-pdf/fonts')}"
-        ]
-        a_opts
+    desc "convert-module", "convert all documents within an Antora module"
+    option :module_path,
+      desc: "Antora module path",
+      aliases: %w(-m),
+      required: true
+    option :output,
+      desc: "destination directory",
+      aliases: %w(-o),
+      default: Dir.pwd
+    option :attributes,
+      desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
+      type: :hash,
+      aliases: %w(-a),
+      default: {}
+    def convert_module
+      begin
+        Dir.glob("#{options[:module_path]}/**/pages/*.adoc") do |file|
+          doc = Document.new(file)
+          destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
+          spinner = TTY::Spinner.new("[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ")
+          doc.convert_to_pdf(options)
+          spinner.success "Done!"
+        end
+      rescue Error => e
+        spinner.error("(ERROR: #{e.message})")
       end
     end
 
