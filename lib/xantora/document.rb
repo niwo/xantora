@@ -16,15 +16,20 @@ module Xantora
       @to_file = options[:to_file]
     end
 
+    def component_dir
+      File.expand_path "../../../", File.dirname(@path)
+    end
+
+    def module_dir
+      File.expand_path "..", File.dirname(@path)
+    end
+
     def page_component_title
-      module_dir = File.expand_path "../../..", File.dirname(@path)
-      begin
-        YAML.load_file(
-          File.join(module_dir, "antora.yml")
-        )["title"]
-      rescue StandardError
-        ""
-      end
+      YAML.load_file(
+        File.join(component_dir, "antora.yml")
+      )["title"]
+    rescue StandardError
+      ""
     end
 
     def pdf_name
@@ -37,7 +42,9 @@ module Xantora
     end
 
     def pdf_path(options)
-      if !options[:output]
+      if options[:to_attachments]
+        File.join(attachments_path, pdf_name)
+      elsif !options[:output]
         pdf_name
       elsif options[:output].end_with? ".pdf"
         options[:output]
@@ -46,11 +53,18 @@ module Xantora
       end
     end
 
+    def attachments_path
+      if Dir.exist? File.join(module_dir, "attachments")
+        File.join(module_dir, "attachments")
+      else
+        File.join(module_dir, "assets/attachments")
+      end
+    end
+
     def images_dir
-      base_dir = File.expand_path("../..", @path)
-      if Dir.exist? File.join(base_dir, "images")
+      if Dir.exist? File.join(module_dir, "images")
         "../images"
-      elsif Dir.exist? File.join(base_dir, "assets/images")
+      elsif Dir.exist? File.join(module_dir, "assets/images")
         "../assets/images"
       else
         ""

@@ -8,13 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Nik Wolfgramm"]
   spec.email         = ["wolfgramm@puzzle.ch"]
 
-  spec.summary       = "A PDF-exporter for Antora AsciiDoc documents."
+  spec.summary       = "A PDF-converter for Antora AsciiDoc documents"
   spec.description   = "A Ruby CLI-Tool which makes it easy to export PDF's from your Antora AsciiDoc-Files"
   spec.homepage      = "https://github.com/niwo/xantora"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
-
-  # spec.metadata["allowed_push_host"] = "TODO: Set to 'https://mygemserver.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage

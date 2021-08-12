@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/prawnpdf/prawn-table.git
-  revision: 515f2db294866a343b05d15f94e5fb417a32f6ff
-  branch: HEAD
-  specs:
-    prawn-table (0.2.3)
-      prawn (>= 1.3.0, < 3.0.0)
-
 PATH
   remote: .
   specs:
@@ -58,6 +50,8 @@ GEM
       css_parser (~> 1.6)
       prawn (>= 0.11.1, < 3)
       rexml (~> 3.2)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
     prawn-templates (0.1.2)
       pdf-reader (~> 2.0)
       prawn (~> 2.2)
@@ -94,7 +88,6 @@ PLATFORMS
 
 DEPENDENCIES
   minitest (~> 5.0)
-  prawn-table!
   rake (~> 13.0)
   rubocop (~> 1.7)
   xantora!

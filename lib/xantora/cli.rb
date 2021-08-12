@@ -28,20 +28,30 @@ module Xantora
       }
     ]
 
-    desc "convert-document", "Convert a single asciidoc document"
+    attachment_option = [
+      :to_attachments, {
+        desc: "place output in the modules attachment dir",
+        type: :boolean,
+        aliases: %w[-A],
+        default: false
+      }
+    ]
+
+    desc "convert-document", "Convert a single Antora page"
     option :source,
            desc: "source Antora document path",
            aliases: %w[-s],
            required: true
     option :output,
-           desc: "destination file",
+           desc: "destination file or directory",
            aliases: %w[-o]
     method_option(*attributes_option)
+    method_option(*attachment_option)
     def convert_document
       convert(options[:source], options)
     end
 
-    desc "convert-module", "Convert all documents within an Antora module"
+    desc "convert-modules", "Convert all pages from an Antora modules-directory"
     option :source,
            desc: "Antora module path",
            aliases: %w[-s],
@@ -51,6 +61,7 @@ module Xantora
            aliases: %w[-o],
            default: Dir.pwd
     method_option(*attributes_option)
+    method_option(*attachment_option)
     def convert_module
       puts "[.] Scanning module directory for .adoc files ..."
       Dir.glob("#{options[:source]}/**/pages/*.adoc") do |file|

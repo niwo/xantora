@@ -20,10 +20,16 @@ Convert a single document:
 xantora convert-document -s modules/user-guide/pages/index.adoc
 ```
 
-Convert a single document:
+Convert a all documents within a component:
 
 ```bash
-xantora convert-module -s modules/
+xantora convert-modules -s modules/
+```
+
+Convert all documents and store PDF's in the attachment folders (using option `--to-attachments` or `-A`):
+
+```bash
+xantora convert-modules -s modules/ --to-attachments 
 ```
 
 See `xantora help` for more usage instructions.
@@ -32,8 +38,10 @@ See `xantora help` for more usage instructions.
 
 - Preconfigured [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/) setup wich makes it simple to convert single Antora documents or whole modules into PDF's
 - Integrated PDF-theme suppport which makes your documents look good out of the box
+- Uses the santisized AsciiDoc document title as PDF filename
 - Sets the image-path according your Antora folder structure
 - Autodetects `antora.yml` configs in order to extract metadata such as `page-component-title`, which can be used in themes (i.e. header and footer)
+- Optionaly Xantora will safe PDF's in attachments folders coresponding to source documents
 
 ## Known Limitations
 
