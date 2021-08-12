@@ -31,14 +31,14 @@ See `xantora help` for more usage instructions.
 ## Features
 
 - Preconfigured [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/) setup wich makes it simple to convert single Antora documents or whole modules into PDF's
-- Includes a pdf-theme which makes your PDF's look good out of the box
+- Integrated PDF-theme suppport which makes your documents look good out of the box
 - Sets the image-path according your Antora folder structure
 - Autodetects `antora.yml` configs in order to extract metadata such as `page-component-title`, which can be used in themes (i.e. header and footer)
 
 ## Known Limitations
 
 - Images referenced outside the documents own Antora module can't be loaded
-- Tables containing big images can make the Prawn table formatter fail with `Prawn::Errors::CannotFit`
+- Same limitations as with asciidoctor-pdf do apply, see [asciidoctor-pdf known-limitations](https://github.com/asciidoctor/asciidoctor-pdf#known-limitations)
 
 ## Development
 
