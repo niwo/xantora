@@ -36,7 +36,7 @@ module Xantora
       name = File.basename(@path, ".adoc")
       if name == "index"
         doc = Asciidoctor.load_file @path, safe: :safe
-        name = doc.doctitle.gsub(/[^0-9A-Za-z.\-]/, "_")
+        name = doc.doctitle ? doc.doctitle.gsub(/[^0-9A-Za-z.\-]/, "_") : "index"
       end
       "#{name}.pdf"
     end

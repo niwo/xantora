@@ -2,6 +2,7 @@
 
 require "thor"
 require "tty-spinner"
+require "stringio"
 
 module Xantora
   # Class responsible for the CLI logic based on thor
@@ -62,7 +63,7 @@ module Xantora
            default: Dir.pwd
     method_option(*attributes_option)
     method_option(*attachment_option)
-    def convert_module
+    def convert_modules
       puts "[.] Scanning module directory for .adoc files ..."
       Dir.glob("#{options[:source]}/**/pages/*.adoc") do |file|
         convert(file, options)
@@ -77,10 +78,10 @@ module Xantora
           format: :bouncing_ball
         )
         spinner.auto_spin
-        doc.convert_to_pdf(options)
-        spinner.success "Done!"
-      rescue Error => e
-        spinner.error("(ERROR: #{e.message})")
+        capture_stderr { doc.convert_to_pdf(options) }
+        spinner.success "(successful)"
+      rescue => e
+        spinner.error("(error: #{e.message})")
       end
 
       def destination(doc, options)
@@ -89,6 +90,14 @@ module Xantora
         else
           doc.pdf_name
         end
+      end
+
+      def capture_stderr
+        real_stderr, $stderr = $stderr, StringIO.new
+        yield
+        $stderr.string
+      ensure
+        $stderr = real_stderr
       end
     end
   end
