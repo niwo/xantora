@@ -2,12 +2,15 @@ extends: default
 toc-title: Inhaltsverzeichnis
 font:
   catalog:
-    merge: false
+    merge: true
     Roboto:
       normal: Roboto-Regular.ttf
       italic: Roboto-Italic.ttf
       bold: Roboto-Bold.ttf
       bold_italic: Roboto-BoldItalic.ttf
+    DroidSansFallback: DroidSansFallback.ttf
+  fallbacks:
+  - DroidSansFallback
 ulist:
   marker:
     circle:
