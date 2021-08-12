@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "thor"
 require "tty-spinner"
 
 module Xantora
-
+  # Class responsible for the CLI logic based on thor
   class CLI < Thor
     # Error raised by this runner
     Error = Class.new(StandardError)
@@ -11,31 +13,56 @@ module Xantora
       true
     end
 
-    desc "version", "app version"
+    desc "version", "Xantora version"
     def version
       puts "v#{Xantora::VERSION}"
     end
-    map %w(--version -v) => :version
+    map %w[--version -v] => :version
 
-    desc "convert-document", "convert a single asciidoc document"
-    option :file,
-      desc: "source asciidoc file path",
-      aliases: %w(-f),
-      required: true
+    attributes_option = [
+      :attributes, {
+        desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
+        type: :hash,
+        aliases: %w[-a],
+        default: {}
+      }
+    ]
+
+    desc "convert-document", "Convert a single asciidoc document"
+    option :source,
+           desc: "source Antora document path",
+           aliases: %w[-s],
+           required: true
     option :output,
-      desc: "destination file path",
-      aliases: %w(-o)
-    option :attributes,
-      desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
-      type: :hash,
-      aliases: %w(-a),
-      default: {}
+           desc: "destination file",
+           aliases: %w[-o]
+    method_option(*attributes_option)
     def convert_document
-      begin
-        doc = Document.new(options[:file])
-        destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
+      convert(options[:source], options)
+    end
+
+    desc "convert-module", "Convert all documents within an Antora module"
+    option :source,
+           desc: "Antora module path",
+           aliases: %w[-s],
+           required: true
+    option :output,
+           desc: "destination directory",
+           aliases: %w[-o],
+           default: Dir.pwd
+    method_option(*attributes_option)
+    def convert_module
+      puts "[.] Scanning module directory for .adoc files ..."
+      Dir.glob("#{options[:source]}/**/pages/*.adoc") do |file|
+        convert(file, options)
+      end
+    end
+
+    no_tasks do
+      def convert(file, options)
+        doc = Document.new(file)
         spinner = TTY::Spinner.new(
-          "[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ",
+          "[:spinner] Converting #{File.basename(doc.path)} to #{destination(doc, options)} ... ",
           format: :bouncing_ball
         )
         spinner.auto_spin
@@ -44,40 +71,14 @@ module Xantora
       rescue Error => e
         spinner.error("(ERROR: #{e.message})")
       end
-    end
 
-    desc "convert-module", "convert all documents within an Antora module"
-    option :module_path,
-      desc: "Antora module path",
-      aliases: %w(-m),
-      required: true
-    option :output,
-      desc: "destination directory",
-      aliases: %w(-o),
-      default: Dir.pwd
-    option :attributes,
-      desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
-      type: :hash,
-      aliases: %w(-a),
-      default: {}
-    def convert_module
-      begin
-        Dir.glob("#{options[:module_path]}/**/pages/*.adoc") do |file|
-          doc = Document.new(file)
-          destination = options[:to_file] ? File.basename(options[:to_file]) : doc.pdf_name
-          spinner = TTY::Spinner.new(
-            "[:spinner] Converting #{File.basename(doc.path)} to #{destination} ... ",
-            format: :bouncing_ball
-          )
-          spinner.auto_spin
-          doc.convert_to_pdf(options)
-          spinner.success "Done!"
+      def destination(doc, options)
+        if options[:output]&.end_with?(".pdf")
+          File.basename(options[:output])
+        else
+          doc.pdf_name
         end
-      rescue Error => e
-        spinner.error("(ERROR: #{e.message})")
       end
     end
-
   end
-
 end

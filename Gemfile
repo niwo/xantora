@@ -5,8 +5,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in xantora.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
-
 gem "minitest", "~> 5.0"
-
+gem "rake", "~> 13.0"
 gem "rubocop", "~> 1.7"
+
+# gem "prawn-table", github: "prawnpdf/prawn-table", branch: "HEAD"

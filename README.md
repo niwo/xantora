@@ -1,6 +1,7 @@
 # Xantora
 
-A PDF-exporter for your [Antora](https://antora.org/) (AsciiDoc) documentation
+A PDF-converter for [Antora](https://antora.org/) (AsciiDoc) documents.
+
 This Ruby CLI-Tool uses [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/) and makes it easy to export PDF's from Antora projects.
 
 ## Installation
@@ -13,7 +14,24 @@ gem install xantora
 
 ## Usage
 
-See `xantora help` for usage instructions.
+Convert a single document:
+
+```bash
+xantora convert-document -s modules/user-guide/pages/index.adoc
+```
+
+Convert a single document:
+
+```bash
+xantora convert-module -s modules/
+```
+
+See `xantora help` for more usage instructions.
+
+## Known Limitations
+
+- Images referenced outside the documents own Antora module can't be loaded
+- Tables containing big images can make the Prawn table formatter fail with `Prawn::Errors::CannotFit`
 
 ## Development
 
