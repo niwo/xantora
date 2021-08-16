@@ -29,7 +29,7 @@ xantora convert modules/
 Convert all documents and store PDF's in the attachment folders (using option `--to-attachments` or `-A`):
 
 ```bash
-xantora convert-modules modules/ --to-attachments 
+xantora convert modules/ --to-attachments 
 ```
 
 See `xantora help` for more usage instructions.
