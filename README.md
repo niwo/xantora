@@ -14,16 +14,16 @@ gem install xantora
 
 ## Usage
 
-Convert a single document:
+Convert a single AsciiDoc document:
 
 ```bash
-xantora convert-document -s modules/user-guide/pages/index.adoc
+xantora convert -s modules/user-guide/pages/index.adoc
 ```
 
-Convert a all documents within a component:
+Convert a all documents within an Antora component:
 
 ```bash
-xantora convert-modules -s modules/
+xantora convert -s modules/
 ```
 
 Convert all documents and store PDF's in the attachment folders (using option `--to-attachments` or `-A`):

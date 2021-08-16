@@ -20,58 +20,39 @@ module Xantora
     end
     map %w[--version -v] => :version
 
-    attributes_option = [
-      :attributes, {
-        desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
-        type: :hash,
-        aliases: %w[-a],
-        default: {}
-      }
-    ]
-
-    attachment_option = [
-      :to_attachments, {
-        desc: "place output in the modules attachment dir",
-        type: :boolean,
-        aliases: %w[-A],
-        default: false
-      }
-    ]
-
-    desc "convert-document", "Convert a single Antora page"
+    desc "convert", "Convert Antora document(s) to PDF"
     option :source,
-           desc: "source Antora document path",
+           desc: "Antora document (.adoc) or modules path",
            aliases: %w[-s],
            required: true
     option :output,
            desc: "destination file or directory",
-           aliases: %w[-o]
-    method_option(*attributes_option)
-    method_option(*attachment_option)
-    def convert_document
-      convert(options[:source], options)
-    end
-
-    desc "convert-modules", "Convert all pages from an Antora modules-directory"
-    option :source,
-           desc: "Antora module path",
-           aliases: %w[-s],
-           required: true
-    option :output,
-           desc: "destination directory",
            aliases: %w[-o],
            default: Dir.pwd
-    method_option(*attributes_option)
-    method_option(*attachment_option)
-    def convert_modules
-      puts "[.] Scanning module directory for .adoc files ..."
-      Dir.glob("#{options[:source]}/**/pages/*.adoc") do |file|
-        convert(file, options)
+    option :attributes,
+           desc: "additional ascciidoc page attributes (attr1:value1 attr2:value2 ...)",
+           type: :hash,
+           aliases: %w[-a],
+           default: {}
+    option :to_attachments,
+           desc: "place output in the modules attachment-dir",
+           type: :boolean,
+           aliases: %w[-A],
+           default: false
+    def convert
+      if File.directory? options[:source]
+        puts "[.] Scanning module directory for .adoc files ..."
+        Dir.glob("#{options[:source]}/**/pages/*.adoc") { |file| convert_document(file, options) }
+      elsif options[:source].end_with? ".adoc"
+        convert_document(options[:source], options)
+      else
+        puts "[error] No valid source detected."
+        exit 1
       end
     end
 
     no_tasks do
-      def convert(file, options)
+      def convert_document(file, options)
         doc = Document.new(file)
         spinner = TTY::Spinner.new(
           "[:spinner] Converting #{File.basename(doc.path)} to #{destination(doc, options)} ... ",
@@ -80,20 +61,17 @@ module Xantora
         spinner.auto_spin
         capture_stderr { doc.convert_to_pdf(options) }
         spinner.success "(successful)"
-      rescue => e
+      rescue StandardError => e
         spinner.error("(error: #{e.message})")
       end
 
       def destination(doc, options)
-        if options[:output]&.end_with?(".pdf")
-          File.basename(options[:output])
-        else
-          doc.pdf_name
-        end
+        options[:output]&.end_with?(".pdf") ? File.basename(options[:output]) : doc.pdf_name
       end
 
       def capture_stderr
-        real_stderr, $stderr = $stderr, StringIO.new
+        real_stderr = $stderr
+        $stderr = StringIO.new
         yield
         $stderr.string
       ensure
