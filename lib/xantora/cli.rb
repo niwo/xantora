@@ -21,10 +21,6 @@ module Xantora
     map %w[--version -v] => :version
 
     desc "convert SOURCE (.adoc or modules-path)", "Convert Antora a document(s) to PDF. SOURCE can be an AsciiDoc-file or an Antora modules-path."
-    # option :source,
-    #        desc: "Antora document (.adoc) or modules path",
-    #        aliases: %w[-s],
-    #        required: true
     option :output,
            desc: "destination file or directory",
            aliases: %w[-o],
@@ -40,10 +36,10 @@ module Xantora
            aliases: %w[-A],
            default: false
     def convert(source)
-      if File.directory? source #options[:source]
-        puts "[.] Scanning module directory for .adoc files ..."
-        Dir.glob("#{options[:source]}/**/pages/*.adoc") { |file| convert_document(file, options) }
-      elsif options[:source].end_with? ".adoc"
+      if File.directory? source
+        puts "[.] Scanning #{source} directory for .adoc files ..."
+        Dir.glob(File.join(source, "/**/pages/*.adoc")) { |file| convert_document(file, options) }
+      elsif source.end_with? ".adoc"
         convert_document(source, options)
       else
         puts "[error] No valid source detected."

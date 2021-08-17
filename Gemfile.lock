@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    xantora (0.1.0)
+    xantora (0.2.1)
       asciidoctor-pdf (~> 1.6.0)
       thor (~> 1.1.0)
       tty-spinner (~> 0.9.3)
