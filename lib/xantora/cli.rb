@@ -41,7 +41,7 @@ module Xantora
            default: false
     def convert(source)
       if File.directory? source #options[:source]
-        puts "[.] Scanning module directory for .adoc files ..."
+        puts "[.] Scanning #{source} directory for .adoc files ..."
         Dir.glob("#{options[:source]}/**/pages/*.adoc") { |file| convert_document(file, options) }
       elsif options[:source].end_with? ".adoc"
         convert_document(source, options)
